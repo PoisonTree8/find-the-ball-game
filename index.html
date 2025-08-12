@@ -3,13 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find The Ball</Table></title>
-    <link rel="css/style.css" href="">
+    <title>Find The Ball</title>
+    <link rel="stylesheet" href="css/style.css">
     <script src="js/app.js" defer></script>
 </head>
 <body>
-    <main class="container">
+  <main class="wrap">
+    <header class="top">
+        <h1>Find The Ball</h1>
+
+        <section>
+            <button id="startBtn">Start</button>
+        </section>
+        <section class="score">
+            <div>Round: <span id="round">1</span></div>
+            <div>Highscore: <span id="wins">0</span></div>
+        </section>
+    </header>
+
+    <section id="table" class="table" aria-label="playing table">
+        <div id="ball" class="ball" aria-hidden="true" style="--x:50"></div>
+    </section>
+
+  </main>
+ 
     
-        </main>
+        
 </body>
 </html>
