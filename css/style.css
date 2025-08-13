@@ -1,0 +1,16 @@
+.ball {
+    position: absolute;
+    bottom: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    border-radius: 50%;
+}
+.table {
+    position: relative;
+}
+#startBtn {
+
+}
