@@ -1,8 +1,8 @@
-
+:root{ --speed: 450ms;}
 
 .ball {
     position: absolute;
-    bottom: 15%;
+    bottom: 20%;
     left: 50%;
     transform: translateX(-50%);
     width: 30px;
@@ -12,6 +12,11 @@
 }
 .table {
     position: relative;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 40px;
+    min-height: 260px;
 }
 #startBtn {
 cursor: pointer;
@@ -23,7 +28,6 @@ color: #ffffff;
 
 width: 80px;
 height: 80px;
-padding: 0;
 
 border-radius: 50%;
 border: none;
@@ -31,9 +35,7 @@ box-shadow: 0 12px 16px rgba(0,0,0,0.24),
              0 17px 50px rgba(0,0,0,0.19);
 
 transition: background-color 0.2s ease, transform 0.15s ease;
-position: fixed;
-top: 450px;
-left: 48%;
+
 
 
 }
@@ -48,8 +50,14 @@ left: 48%;
 
 .cup {
     position: relative;
-    top: 35px;
-    left: 290px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.cup-img {
+  width: 120px;
+  height: auto;
+  display: block;
 }
 
 h1 {
@@ -77,5 +85,11 @@ h1 {
   padding: 10px 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.controls {
+text-align: center;
+margin-top: 20px;
+display: flex;
+justify-content: center;
 }
 
