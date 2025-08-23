@@ -6,7 +6,7 @@ const ball        = document.getElementById("ball");
 const roundEl     = document.getElementById("Round");
 const highscoreEl = document.getElementById("Highscore");
 const POS = [15, 50, 85];   //cups positions on table
-
+const statusEl    = document.getElementById("status");
 
 /*---------------------------- Variables (state) ----------------------------*/
 let layout      = [0, 1, 2]; 
@@ -14,9 +14,9 @@ let ballCupId   = 1;        //ball always under this cup
 let isShuffling = false;
 let round       = 1;
 let highscore   = 0;
+let isGameOver  = false;
 
-
-/*---------------------------- Variables (state) ----------------------------*/
+/*---------------------------- Functions ----------------------------*/
 function wait(ms){
    return new Promise(r => setTimeout(r, ms));
    }
@@ -41,12 +41,11 @@ function render() {
     cup.style.left = POS[posIndex] + '%';
   });
 
-//put the ball under the right cup
   const bIndex = layout.indexOf(ballCupId);
   if (bIndex !== -1) ball.style.left = POS[bIndex] + '%';
 }
 
-//cups animation
+//cups animation function
 function setLift(el, on){
   if (!el) return;
   if (on) {
@@ -54,9 +53,19 @@ function setLift(el, on){
     el.classList.remove('drop-bounce');
   } else {
     el.classList.remove('lift');
-    el.classList.add('drop-bounce');
-    setTimeout(() => el.classList.remove('drop-bounce'), 140);
   }
+}
+
+async function revealBall(){
+  const cup = document.getElementById(String(ballCupId));
+  if (!cup) return;
+  setLift(cup, true);
+  ball.style.zIndex = '3';
+  ball.style.opacity = '1';
+  await wait(800);
+  setLift(cup, false);
+  ball.style.zIndex = '1';
+  await wait(200);
 }
 
 // swap two cups together
@@ -73,12 +82,9 @@ async function animateSwap(i, j){
 
  
   [layout[i], layout[j]] = [layout[j], layout[i]];
+
   render();
-
- 
   await wait(SPEED_MS);
-
-
   setLift(cupA, false);
   setLift(cupB, false);
   await wait(100);
@@ -88,15 +94,9 @@ async function animateSwap(i, j){
 async function shuffleCupsAnimated(steps = 8){
   if (isShuffling) return;
   isShuffling = true;
-
- 
-  ball.style.opacity = '10';
-
-
+  ball.style.opacity = '0';
   startBtn.disabled = true;
   cups.forEach(c => c.style.pointerEvents = 'none');
-
- 
   let last = -1;
   for (let t = 0; t < steps; t++){
     let i = Math.floor(Math.random() * 3);
@@ -118,46 +118,53 @@ async function shuffleCupsAnimated(steps = 8){
 }
 
 
-function updateScore(correct){
+function checkChoice(clickedIndex){
+  if (isShuffling || isGameOver) return;
+  const clickedCupId = Number(cups[clickedIndex].id);
+  const correct = (clickedCupId === ballCupId);
   if (correct) {
     round++;
     if (round > highscore) highscore = round;
+    roundEl.textContent = round;
+    highscoreEl.textContent = highscore;
+    ballCupId = 1;
+    layout = cups.map(c => Number(c.id));
+    render();
+    setTimeout(() => { revealBall().then(() => shuffleCupsAnimated(8)); }, 200);
   } else {
-    round = 1;
+    isGameOver = true;
+    statusEl.textContent = "You lost!";
+    statusEl.classList.remove("hidden");
+    startBtn.textContent = "Restart";
+    ball.style.opacity = '1';
+    cups.forEach(c => c.style.pointerEvents = 'none');
   }
-  roundEl.textContent = round;
-  highscoreEl.textContent = highscore;
 }
 
-function checkChoice(clickedIndex){
-  if (isShuffling) return;
-
-  const clickedCupId = Number(cups[clickedIndex].id);
-  const correct = (clickedCupId === ballCupId);
-  updateScore(correct);
-
- 
-  ballCupId = 1;           
-  layout = cups.map(c => Number(c.id)); 
-  render();
-  setTimeout(() => shuffleCupsAnimated(8), 200);
-}
 
 /*----------------------------- Event Listeners -----------------------------*/
 startBtn.addEventListener("click", () => {
-  if (!isShuffling) shuffleCupsAnimated(8); //<=== num of shuffle
+  if (isShuffling) return;
+  if (isGameOver) {
+    isGameOver = false;
+    statusEl.classList.add("hidden");
+    startBtn.textContent = "Start";
+    cups.forEach(c => c.style.pointerEvents = '');
+    round = 1;
+    roundEl.textContent = round;
+    ballCupId = 1;
+    layout = cups.map(c => Number(c.id));
+    render();
+  }
+  revealBall().then(() => shuffleCupsAnimated(8));
 });
 
 cups.forEach((cup, index) => {
-  cup.addEventListener("click", () => {
-    checkChoice(index);
-  });
+  cup.addEventListener("click", () => checkChoice(index));
 });
 
-
 window.addEventListener("load", () => {
-
-  layout = cups.map(c => Number(c.id)); 
+  layout = cups.map(c => Number(c.id));
   ballCupId = 1;
   round = 1;
   highscore = 0;
